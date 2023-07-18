@@ -2,6 +2,7 @@ import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 
 export const WalletContext = createContext();
 
@@ -17,11 +18,17 @@ export const CustomWalletProvider = (props) => {
     const [wallet, setWallet] = useState(null);
 
     const connectWallet = async() => {
-        await walletAdapter.connect();
-        console.log("walletAdapter=", walletAdapter)
-        setConnected(true);
-        setWallet(walletAdapter);
-        setWalletAddress(walletAdapter.publicKey.toBase58());
+        try {
+            await walletAdapter.connect();
+            console.log("walletAdapter=", walletAdapter)
+            setConnected(true);
+            setWallet(walletAdapter);
+            setWalletAddress(walletAdapter.publicKey.toBase58());
+        } catch(err) {
+            console.log('err=', err);
+            toast.info("Please install the phantom wallet.");
+        }
+        
     }
 
     const disconnectWallet = async() => {
